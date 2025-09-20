@@ -119,8 +119,22 @@ app.put('/api/cars/:id', (req, res) => {
     return res.status(404).json({ message: 'Car not found' });
   }
 
-  const carData = updateCarData(req.body);
-  cars[carIndex] = { ...cars[carIndex], ...carData };
+  // 기존 데이터에 요청받은 데이터(req.body)를 덮어쓰기하여 부분 업데이트 처리
+  const originalCar = cars[carIndex];
+  const updatedCar = { ...originalCar, ...req.body };
+
+  // 데이터 타입 및 유효성 검사 (요청에 해당 필드가 있을 경우에만)
+  if (req.body.hasOwnProperty('year')) {
+    updatedCar.year = req.body.year ? parseInt(req.body.year, 10) || null : null;
+  }
+  if (req.body.hasOwnProperty('price')) {
+    updatedCar.price = parseFloat(req.body.price) || 0;
+  }
+  if (req.body.hasOwnProperty('memo')) {
+    updatedCar.memo = sanitizeMemo(req.body.memo);
+  }
+
+  cars[carIndex] = updatedCar;
   fs.writeFileSync(CARS_JSON_PATH, JSON.stringify(cars, null, 2));
   res.json(cars[carIndex]);
 });

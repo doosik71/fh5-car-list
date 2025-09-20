@@ -182,6 +182,34 @@ tr.owned-car:hover {
     background-color: #dcedc8; /* Slightly darker green on hover */
 }
 
+.owned-cell {
+    cursor: pointer;
+    user-select: none; /* 텍스트가 선택되지 않도록 설정 */
+    border-radius: 4px;
+    font-weight: bold;
+    padding: 3px 8px;
+    background-color: #ffebee; /* 'N' 상태일 때 연한 빨강 배경 */
+    color: #c62828;
+    transition: background-color 0.2s ease;
+}
+
+.owned-cell:hover {
+    filter: brightness(95%);
+}
+
+.owned-cell.owned-cell-yes {
+    background-color: #e8f5e9; /* 'Y' 상태일 때 연한 초록 배경 */
+    color: #2e7d32;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.align-right {
+    text-align: right;
+}
+
 .actions button {
     padding: 4px 8px;
     border: 1px solid #ccc;

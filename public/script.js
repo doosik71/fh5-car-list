@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${car.car_type}</td>
                 <td>${car.collect}</td>
                 <td>${car.added}</td>
-                <td>${car.owned}</td>
-                <td>${car.price}</td>
+                <td class="owned-cell align-center ${car.owned && car.owned.toUpperCase() === 'Y' ? 'owned-cell-yes' : ''}">${car.owned}</td>
+                <td class="align-right">${(car.price || 0).toLocaleString()}</td>
                 <td>${car.memo}</td>
             `;
             carTableBody.appendChild(tr);
@@ -98,24 +98,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    carTableBody.addEventListener('click', (e) => {
-        const row = e.target.closest('tr');
-        if (!row) return;
+    carTableBody.addEventListener('click', async (e) => {
+        const target = e.target;
 
-        const id = parseInt(row.dataset.id, 10);
-        const carToEdit = allCars.find(car => car.id === id);
-        
-        if (carToEdit) {
-            carIdInput.value = carToEdit.id;
-            document.getElementById('year').value = carToEdit.year;
-            document.getElementById('car_model').value = carToEdit.car_model;
-            document.getElementById('car_type').value = carToEdit.car_type;
-            document.getElementById('collect').value = carToEdit.collect;
-            document.getElementById('added').value = carToEdit.added;
-            document.getElementById('owned').value = carToEdit.owned;
-            document.getElementById('price').value = carToEdit.price;
-            document.getElementById('memo').value = carToEdit.memo;
-            window.scrollTo(0, 0);
+        // Case 1: 'Owned' 셀 클릭 시 상태 토글
+        if (target.classList.contains('owned-cell')) {
+            const row = target.closest('tr');
+            if (!row) return;
+
+            const id = parseInt(row.dataset.id, 10);
+            const carToUpdate = allCars.find(car => car.id === id);
+            if (!carToUpdate) return;
+
+            const newStatus = carToUpdate.owned === 'Y' ? 'N' : 'Y';
+
+            try {
+                const response = await fetch(`/api/cars/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ owned: newStatus }), // owned 상태만 업데이트
+                });
+
+                if (response.ok) {
+                    // 로컬 데이터 및 UI 즉시 업데이트
+                    carToUpdate.owned = newStatus;
+                    target.textContent = newStatus;
+                    row.classList.toggle('owned-car');
+                    target.classList.toggle('owned-cell-yes');
+                } else {
+                    console.error('Failed to update owned status');
+                }
+            } catch (error) {
+                console.error('Error updating owned status:', error);
+            }
+        } 
+        // Case 2: 행의 다른 부분을 클릭 시 폼 채우기
+        else {
+            const row = target.closest('tr');
+            if (!row) return;
+
+            const id = parseInt(row.dataset.id, 10);
+            const carToEdit = allCars.find(car => car.id === id);
+            
+            if (carToEdit) {
+                carIdInput.value = carToEdit.id;
+                document.getElementById('year').value = carToEdit.year;
+                document.getElementById('car_model').value = carToEdit.car_model;
+                document.getElementById('car_type').value = carToEdit.car_type;
+                document.getElementById('collect').value = carToEdit.collect;
+                document.getElementById('added').value = carToEdit.added;
+                document.getElementById('owned').value = carToEdit.owned;
+                document.getElementById('price').value = carToEdit.price;
+                document.getElementById('memo').value = carToEdit.memo;
+                window.scrollTo(0, 0);
+            }
         }
     });
 
