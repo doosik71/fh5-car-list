@@ -2,15 +2,29 @@
   "name": "fh5-car-list",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "dependencies": {
-    "express": "^5.1.0"
+  "devDependencies": {
+    "electron": "^31.0.1",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.example.fh5-car-list",
+    "productName": "FH5 Car List",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

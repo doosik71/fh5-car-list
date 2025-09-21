@@ -1,3 +1,5 @@
 /node_modules
 /commit_message.txt
 /cars.json
+/dist
+/temp

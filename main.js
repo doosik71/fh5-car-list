@@ -1,10 +1,7 @@
-
-const express = require('express');
-const fs = require('fs');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
-const app = express();
-const PORT = 3000;
 const CARS_JSON_PATH = path.join(__dirname, 'cars.json');
 const CARS_TSV_PATH = path.join(__dirname, 'car-list.tsv');
 
@@ -53,15 +50,36 @@ function initializeData() {
   } else {
       console.error('FATAL: No data source found. Neither cars.json nor car-list.tsv exist.');
   }
-
 }
 
-app.use(express.json());
-app.use(express.static('public'));
+function createWindow () {
+  const mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 800,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
 
-app.get('/api/cars', (req, res) => {
+  mainWindow.loadFile('public/index.html');
+}
+
+app.whenReady().then(() => {
+  initializeData();
+  createWindow();
+
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on('window-all-closed', function () {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+ipcMain.handle('get-cars', async (event, args) => {
   let results = [...cars];
-  const { q, sortBy, sortOrder = 'asc' } = req.query;
+  const { q, sortBy, sortOrder = 'asc' } = args;
 
   if (q) {
     const searchTerm = q.toLowerCase();
@@ -87,7 +105,7 @@ app.get('/api/cars', (req, res) => {
     });
   }
 
-  res.json(results);
+  return results;
 });
 
 const updateCarData = (carData) => {
@@ -103,47 +121,36 @@ const updateCarData = (carData) => {
     return newCar;
 }
 
-app.post('/api/cars', (req, res) => {
-  const carData = updateCarData(req.body);
-  carData.id = cars.length > 0 ? Math.max(...cars.map(c => c.id)) + 1 : 0;
-  cars.push(carData);
+ipcMain.handle('add-car', async (event, carData) => {
+  const newCar = updateCarData(carData);
+  newCar.id = cars.length > 0 ? Math.max(...cars.map(c => c.id)) + 1 : 0;
+  cars.push(newCar);
   fs.writeFileSync(CARS_JSON_PATH, JSON.stringify(cars, null, 2));
-  res.status(201).json(carData);
+  return newCar;
 });
 
-app.put('/api/cars/:id', (req, res) => {
-  const carId = parseInt(req.params.id, 10);
+ipcMain.handle('update-car', async (event, carData) => {
+  const carId = parseInt(carData.id, 10);
   const carIndex = cars.findIndex(c => c.id === carId);
 
   if (carIndex === -1) {
-    return res.status(404).json({ message: 'Car not found' });
+    return { message: 'Car not found' };
   }
 
-  // 기존 데이터에 요청받은 데이터(req.body)를 덮어쓰기하여 부분 업데이트 처리
   const originalCar = cars[carIndex];
-  const updatedCar = { ...originalCar, ...req.body };
+  const updatedCar = { ...originalCar, ...carData };
 
-  // 데이터 타입 및 유효성 검사 (요청에 해당 필드가 있을 경우에만)
-  if (req.body.hasOwnProperty('year')) {
-    updatedCar.year = req.body.year ? parseInt(req.body.year, 10) || null : null;
+  if (carData.hasOwnProperty('year')) {
+    updatedCar.year = carData.year ? parseInt(carData.year, 10) || null : null;
   }
-  if (req.body.hasOwnProperty('price')) {
-    updatedCar.price = parseFloat(req.body.price) || 0;
+  if (carData.hasOwnProperty('price')) {
+    updatedCar.price = parseFloat(carData.price) || 0;
   }
-  if (req.body.hasOwnProperty('memo')) {
-    updatedCar.memo = sanitizeMemo(req.body.memo);
+  if (carData.hasOwnProperty('memo')) {
+    updatedCar.memo = sanitizeMemo(carData.memo);
   }
 
   cars[carIndex] = updatedCar;
   fs.writeFileSync(CARS_JSON_PATH, JSON.stringify(cars, null, 2));
-  res.json(cars[carIndex]);
-});
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.listen(PORT, () => {
-  initializeData();
-  console.log(`Server is running on http://localhost:${PORT}`);
+  return cars[carIndex];
 });

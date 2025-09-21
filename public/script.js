@@ -12,10 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchCars = async () => {
         const query = searchInput.value;
         const { by, order } = currentSort;
-        const url = `/api/cars?q=${encodeURIComponent(query)}&sortBy=${by}&sortOrder=${order}`;
         try {
-            const response = await fetch(url);
-            allCars = await response.json();
+            allCars = await window.electronAPI.getCars({ q: query, sortBy: by, sortOrder: order });
             renderCars(allCars);
         } catch (error) {
             console.error('Error fetching cars:', error);
@@ -77,22 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
             memo: document.getElementById('memo').value,
         };
 
-        const method = id ? 'PUT' : 'POST';
-        const url = id ? `/api/cars/${id}` : '/api/cars';
-
         try {
-            const response = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(carData),
-            });
-
-            if (response.ok) {
-                clearForm();
-                fetchCars();
+            if (id) {
+                await window.electronAPI.updateCar({ ...carData, id });
             } else {
-                console.error('Failed to save car');
+                await window.electronAPI.addCar(carData);
             }
+            clearForm();
+            fetchCars();
         } catch (error) {
             console.error('Error saving car:', error);
         }
@@ -113,21 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const newStatus = carToUpdate.owned === 'Y' ? 'N' : 'Y';
 
             try {
-                const response = await fetch(`/api/cars/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ owned: newStatus }), // owned 상태만 업데이트
-                });
-
-                if (response.ok) {
-                    // 로컬 데이터 및 UI 즉시 업데이트
-                    carToUpdate.owned = newStatus;
-                    target.textContent = newStatus;
-                    row.classList.toggle('owned-car');
-                    target.classList.toggle('owned-cell-yes');
-                } else {
-                    console.error('Failed to update owned status');
-                }
+                await window.electronAPI.updateCar({ id, owned: newStatus });
+                // 로컬 데이터 및 UI 즉시 업데이트
+                carToUpdate.owned = newStatus;
+                target.textContent = newStatus;
+                row.classList.toggle('owned-car');
+                target.classList.toggle('owned-cell-yes');
             } catch (error) {
                 console.error('Error updating owned status:', error);
             }
@@ -150,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('owned').value = carToEdit.owned;
                 document.getElementById('price').value = carToEdit.price;
                 document.getElementById('memo').value = carToEdit.memo;
-                window.scrollTo(0, 0);
             }
         }
     });
