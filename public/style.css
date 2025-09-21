@@ -189,6 +189,10 @@ tr.owned-car:hover {
     background-color: #dcedc8; /* Slightly darker green on hover */
 }
 
+tr.selected-row td {
+    font-weight: bold;
+}
+
 .owned-cell {
     cursor: pointer;
     user-select: none; /* 텍스트가 선택되지 않도록 설정 */

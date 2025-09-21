@@ -118,6 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = target.closest('tr');
             if (!row) return;
 
+            // 이전에 선택된 행의 스타일 제거
+            const currentSelected = carTableBody.querySelector('.selected-row');
+            if (currentSelected) {
+                currentSelected.classList.remove('selected-row');
+            }
+            // 현재 행에 선택 스타일 추가
+            row.classList.add('selected-row');
+
             const id = parseInt(row.dataset.id, 10);
             const carToEdit = allCars.find(car => car.id === id);
             
@@ -138,6 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearForm = () => {
         carForm.reset();
         carIdInput.value = '';
+        const currentSelected = carTableBody.querySelector('.selected-row');
+        if (currentSelected) {
+            currentSelected.classList.remove('selected-row');
+        }
     };
 
     clearBtn.addEventListener('click', clearForm);

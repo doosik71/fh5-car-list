@@ -138,7 +138,11 @@ ipcMain.handle('update-car', async (event, carData) => {
   }
 
   const originalCar = cars[carIndex];
+  // Create updated car object, ensuring incoming values are correctly typed
   const updatedCar = { ...originalCar, ...carData };
+
+  // Ensure ID remains a number, as carData might contain it as a string
+  updatedCar.id = carId;
 
   if (carData.hasOwnProperty('year')) {
     updatedCar.year = carData.year ? parseInt(carData.year, 10) || null : null;
