@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-const CARS_JSON_PATH = path.join(__dirname, 'cars.json');
+const CARS_JSON_PATH = path.join(app.getPath('userData'), 'cars.json');
 const CARS_TSV_PATH = path.join(__dirname, 'car-list.tsv');
 
 let cars = [];
