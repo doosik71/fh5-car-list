@@ -82,12 +82,13 @@ ipcMain.handle('get-cars', async (event, args) => {
   const { q, sortBy, sortOrder = 'asc' } = args;
 
   if (q) {
-    const searchTerm = q.toLowerCase();
-    results = results.filter(car =>
-      Object.values(car).some(val =>
-        String(val).toLowerCase().includes(searchTerm)
-      )
-    );
+    const searchTerms = q.toLowerCase().split(/\s+/).filter(term => term.length > 0);
+    results = results.filter(car => {
+      const carValues = Object.values(car).map(val => String(val).toLowerCase());
+      return searchTerms.every(term =>
+        carValues.some(carVal => carVal.includes(term))
+      );
+    });
   }
 
   if (sortBy) {
