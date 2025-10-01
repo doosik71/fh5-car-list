@@ -1,68 +1,20 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FH5 차량 목록</title>
+    <title>FH5 Car List</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="sticky-header">
-            <div id="form-container">
-                <form id="carForm">
-                    <input type="hidden" id="carId">
-                    <div class="form-grid">
-                        <input type="number" id="year" placeholder="Year">
-                        <input type="text" id="car_model" placeholder="Car Model" required>
-                        <input type="text" id="car_type" placeholder="Car Type">
-                        <input type="text" id="collect" placeholder="Collect">
-                        <input type="text" id="added" placeholder="Added">
-                    </div>
-                    <div class="form-last-row">
-                        <select id="owned">
-                            <option value="N">Owned: No</option>
-                            <option value="Y">Owned: Yes</option>
-                        </select>
-                        <input type="number" id="price" placeholder="Price">
-                        <input type="text" id="memo" placeholder="Memo (영숫자, 공백만)">
-                        <button type="submit">저장</button>
-                        <button type="button" id="clearBtn">새로 입력</button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="search-bar" class="controls">
-                <input type="text" id="searchInput" placeholder="차량 검색...">
-                <div class="sort-buttons">
-                    <span>정렬:</span>
-                    <button class="sort-btn" data-sortby="year">Year</button>
-                    <button class="sort-btn" data-sortby="car_model">Model</button>
-                    <button class="sort-btn" data-sortby="car_type">Type</button>
-                    <button class="sort-btn" data-sortby="owned">Owned</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table id="carTable">
-                <thead>
-                    <tr>
-                        <th>Year</th>
-                        <th>Car Model</th>
-                        <th>Car Type</th>
-                        <th>Collect</th>
-                        <th>Added</th>
-                        <th class="align-center">Owned</th>
-                        <th class="align-right">Price</th>
-                        <th>Memo</th>
-                    </tr>
-                </thead>
-                <tbody id="carTableBody">
-                    <!-- Car data will be inserted here by JavaScript -->
-                </tbody>
-            </table>
-        </div>
+    <div id="tab-bar">
+        <!-- Tabs will be dynamically inserted here -->
+        <button id="add-tab-btn">+</button>
+    </div>
+    <div id="tab-contents">
+        <!-- Tab contents will be dynamically inserted here -->
     </div>
 
     <script src="script.js"></script>

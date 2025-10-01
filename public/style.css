@@ -3,8 +3,94 @@ body {
     background-color: #f4f5f7;
     color: #333;
     margin: 0;
-    padding: 10px;
+    padding: 0;
     font-size: 14px;
+}
+
+/* Tab Bar */
+#tab-bar {
+    display: flex;
+    align-items: center;
+    background-color: #e1e4e8;
+    padding: 2px 5px 0 5px;
+    border-bottom: 1px solid #d1d5da;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px;
+    margin-right: 2px;
+    border: 1px solid #d1d5da;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    background-color: #f6f8fa;
+    cursor: pointer;
+    position: relative;
+    bottom: -1px;
+    max-width: 200px;
+}
+
+.tab.active {
+    background-color: #fff;
+    border-color: #d1d5da;
+    border-bottom: 1px solid #fff;
+    font-weight: 700;
+}
+
+.tab-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.close-tab-btn {
+    margin-left: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    color: #586069;
+}
+
+.close-tab-btn:hover {
+    color: #000;
+}
+
+.close-tab-btn.hidden,
+.clear-search-btn.hidden {
+    display: none;
+}
+
+#add-tab-btn {
+    background-color: #2ea44f;
+    color: white;
+    border: 1px solid rgba(27,31,35,.2);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    line-height: 22px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+#add-tab-btn:hover {
+    background-color: #2c974b;
+}
+
+/* Tab Contents */
+#tab-contents {
+    padding: 10px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
 }
 
 .container {
@@ -33,13 +119,42 @@ h1 {
     gap: 10px;
 }
 
-#searchInput {
+.search-wrapper {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+}
+
+.searchInput {
     flex-grow: 1;
     padding: 8px 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #007bff; /* Highlight color */
     border-radius: 4px;
     font-size: 14px;
     min-width: 200px;
+    padding-right: 28px; /* Make space for the clear button */
+}
+
+.searchInput:focus {
+    border-color: #0056b3;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+}
+
+.clear-search-btn:hover {
+    color: #333;
 }
 
 .sort-buttons {
@@ -55,7 +170,7 @@ h1 {
 }
 
 .sort-btn {
-    padding: 6px 12px;
+    padding: 4px 8px;
     border: 1px solid #ccc;
     background-color: #fff;
     border-radius: 4px;
@@ -76,7 +191,7 @@ h1 {
     background-color: #fff;
 }
 
-#form-container {
+.form-container {
     margin-bottom: 8px;
     padding: 10px; /* padding 줄임 */
     background-color: #f9f9f9;
@@ -91,16 +206,20 @@ h1 {
     margin-bottom: 10px;
 }
 
-#carForm input[type="text"],
-#carForm input[type="number"],
-#carForm select,
-#carForm textarea {
+.car-form input[type="text"],
+.car-form input[type="number"],
+.car-form select,
+.car-form textarea {
     width: 100%;
     padding: 5px; /* padding 줄임 */
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 14px;
+}
+
+.car-form input[readonly] {
+    background-color: #f0f0f0;
 }
 
 .form-last-row {
@@ -127,24 +246,24 @@ h1 {
 }
 
 .form-last-row button {
-    flex-shrink: 0; /* 버튼 크기가 줄어들지 않도록 설정 */
-    padding: 8px 12px; /* 버튼 패딩 조정 */
+    flex-shrink: 0;
+    padding: 4px 8px;
 }
 
-#carForm button {
-    padding: 8px 16px;
+.car-form button {
+    padding: 4px 8px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
 }
 
-#carForm button[type="submit"] {
+.car-form button[type="submit"] {
     background-color: #0052cc;
     color: white;
 }
 
-#carForm button[type="button"] {
+.car-form button[type="button"] {
     background-color: #6c757d;
     color: white;
     margin-right: 5px;
@@ -233,4 +352,28 @@ tr.selected-row td {
 .actions button.edit-btn {
     color: #0052cc;
     border-color: #0052cc;
+}
+
+
+.actions button.delete-btn {
+    color: #dc3545;
+    border-color: #dc3545;
+    margin-left: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sort-buttons {
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
 }

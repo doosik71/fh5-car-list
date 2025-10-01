@@ -20,7 +20,8 @@
     "appId": "com.example.fh5-car-list",
     "productName": "FH5 Car List",
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "public/favicon.ico"
     },
     "nsis": {
       "oneClick": false,
